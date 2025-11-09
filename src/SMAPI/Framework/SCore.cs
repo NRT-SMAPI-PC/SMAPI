@@ -238,16 +238,20 @@ internal class SCore : IDisposable
     {
         // initialize SMAPI
 
-        Stopwatch st = Stopwatch.StartNew();
-        var hp = new Harmony("Test");
+        // DebugOptimize feature
         try
         {
-            hp.PatchAll();
+            if (DebugOptimize.EnableDebugOptimize)
+            {
+                var hp = new Harmony(nameof(DebugOptimize));
+                hp.PatchAll();
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex);
         }
+
         try
         {
             JsonConverter[] converters =
@@ -299,7 +303,6 @@ internal class SCore : IDisposable
                 onPlayerInstanceRendered: this.OnRendered,
                 onGameExiting: this.OnGameExiting
             );
-            Console.WriteLine($"SGameRunner instance total time: {st.Elapsed.TotalMilliseconds}ms");
             GameRunner.instance = this.Game;
 
             // fix Harmony for mods
@@ -324,10 +327,10 @@ internal class SCore : IDisposable
         this.UpdateWindowTitles();
 
         // start game
-        Console.WriteLine($"total startup: {st.Elapsed.TotalMilliseconds}ms");
         this.Monitor.Log("Waiting for game to launch...", LogLevel.Debug);
         try
         {
+            DebugOptimize.Prefix_Game1_InitializeSerializers();
             this.IsGameRunning = true;
             StardewValley.Program.releaseBuild = true; // game's debug logic interferes with SMAPI opening the game window
             this.Game.Run();
@@ -1949,6 +1952,7 @@ internal class SCore : IDisposable
 
         // initialize loaded non-content-pack mods
         this.Monitor.Log("Launching mods...", LogLevel.Debug);
+        DebugOptimize.WaitTaskFarmerXmlSerializer();
         foreach (IModMetadata metadata in loadedMods)
         {
             IMod mod =

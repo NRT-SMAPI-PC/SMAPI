@@ -162,6 +162,6 @@ internal class Monitor : IMonitor
         string levelStr = Monitor.LogStrings[level];
         int? playerIndex = this.GetScreenIdForLog();
 
-        return $"[{DateTime.Now:HH:mm:ss} {levelStr}{(playerIndex != null ? $" screen_{playerIndex}" : "")} {source}]";
+        return $"[{DateTime.Now:HH:mm:ss:fff} {levelStr}{(playerIndex != null ? $" screen_{playerIndex}" : "")} {source}]";
     }
 }

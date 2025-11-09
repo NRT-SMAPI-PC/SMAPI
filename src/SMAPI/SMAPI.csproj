@@ -21,6 +21,11 @@
   <Import Project="..\..\build\common.targets" />
 
   <ItemGroup>
+    <PackageReference Include="Krafs.Publicizer">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.XmlSerializer.Generator" />
     <PackageReference Include="Mono.Cecil" />
     <PackageReference Include="MonoMod.Common" />
     <PackageReference Include="Newtonsoft.Json" />
@@ -28,6 +33,18 @@
     <PackageReference Include="Pintail" />
     <PackageReference Include="Platonymous.TMXTile" />
     <PackageReference Include="System.Reflection.Emit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Publicize Include="Stardew Valley:StardewValley.Game1.screenFade" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.onFadeToBlackComplete" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.onFadedBackInComplete" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.DoThreadedInitTask" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.InitializeSerializers" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.InitializeSounds" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.allocateLightmap" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.FinishedFirstInitSerializers" />
+    <Publicize Include="Stardew Valley:StardewValley.Game1.ShouldLoadIncrementally" />
   </ItemGroup>
 
   <ItemGroup>

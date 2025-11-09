@@ -5,36 +5,25 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI.Framework;
 using StardewValley;
+using StardewValley.SaveSerialization;
 
 namespace StardewModdingAPI;
 
 [HarmonyPatch]
 static class DebugOptimize
 {
-    //static Stopwatch st = new();
-    //[HarmonyPrefix]
-    //[HarmonyPatch(typeof(GameRunner), MethodType.Constructor)]
-    //static void GameRunnerCtor()
-    //{
-    //    st.Restart();
-    //    Console.WriteLine("On GameRunner Ctor");
-    //    if (!StardewValley.Program.releaseBuild)
-    //    {
-    //        Console.WriteLine("on debug mode");
-    //    }
-    //}
+    /// <summary>
+    /// Indicates whether debug optimization features are enabled.
+    /// </summary>
+    public static bool EnableDebugOptimize => true;
 
-    //[HarmonyPostfix]
-    //[HarmonyPatch(typeof(GameRunner), MethodType.Constructor)]
-    //static void Postfix_GameRunnerCtor()
-    //{
-    //    st.Stop();
-    //    Console.WriteLine($"On Post GameRunner Ctor total time: {st.Elapsed.TotalMilliseconds}ms");
-    //}
 
     static Stopwatch st3 = new();
     public static bool m_skipLocalMultiplayerInitialize = true;
@@ -58,19 +47,41 @@ static class DebugOptimize
         return true;
     }
 
-    //[HarmonyPostfix]
-    //[HarmonyPatch(typeof(LocalMultiplayer), "GetStaticFieldsAndDefaults")]
-    //static void Postfix_LocalMultiplayer_GetStaticFieldsAndDefaults()
-    //{
-    //    st3.Stop();
-    //    Console.WriteLine($"postfix GetStaticFieldsAndDefaults total time: {st3.Elapsed.TotalMilliseconds}ms");
-    //}
+    static Task? m_taskFarmerXmlSerializer;
 
-    //[HarmonyPrefix]
-    //[HarmonyPatch(typeof(LocalMultiplayer), "GenerateDynamicMethodsForStatics")]
-    //static bool LocalMultiplayer_GenerateDynamicMethodsForStatics()
-    //{
-    //    Console.WriteLine("Skip LocalMultiplayer_GenerateDynamicMethodsForStatics!!");
-    //    return false;
-    //}
+    static IMonitor monitor => SCore.Instance.GetMonitorForGame();
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(Game1), nameof(Game1.InitializeSerializers))]
+    public static bool Prefix_Game1_InitializeSerializers()
+    {
+        if (!EnableDebugOptimize)
+            return false;
+
+        var mon = monitor;
+        mon.Log("calling Prefix_Game1_InitializeSerializers...");
+        if (m_taskFarmerXmlSerializer != null)
+            return false;
+
+        mon.Log("running m_taskFarmerXmlSerializer...");
+        m_taskFarmerXmlSerializer = Task.Run(() =>
+        {
+            var st = Stopwatch.StartNew();
+            var fs = SaveSerializer.GetSerializer(typeof(Farmer));
+            mon.Log($"done m_taskFarmerXmlSerializer time: {st.Elapsed.TotalMilliseconds}ms");
+        });
+        StartupPreferences.serializer = SaveSerializer.GetSerializer(typeof(StartupPreferences));
+        return false;
+    }
+
+    internal static void WaitTaskFarmerXmlSerializer()
+    {
+        if (!EnableDebugOptimize)
+            return;
+
+        var mon = monitor;
+        mon.Log("WaitTaskFarmerXmlSerializer...");
+        m_taskFarmerXmlSerializer?.Wait();
+        Game1.otherFarmers.Serializer = SaveSerializer.GetSerializer(typeof(Farmer));
+        mon.Log("success apply otherFarmers.Serializer!");
+    }
 }
