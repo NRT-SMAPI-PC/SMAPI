@@ -55,6 +55,7 @@ using xTile.Display;
 using LanguageCode = StardewValley.LocalizedContentManager.LanguageCode;
 using MiniMonoModHotfix = MonoMod.Utils.MiniMonoModHotfix;
 using PathUtilities = StardewModdingAPI.Toolkit.Utilities.PathUtilities;
+using HarmonyLib;
 
 namespace StardewModdingAPI.Framework;
 
@@ -236,6 +237,17 @@ internal class SCore : IDisposable
     public void RunInteractively()
     {
         // initialize SMAPI
+
+        Stopwatch st = Stopwatch.StartNew();
+        var hp = new Harmony("Test");
+        try
+        {
+            hp.PatchAll();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
         try
         {
             JsonConverter[] converters =
@@ -287,6 +299,7 @@ internal class SCore : IDisposable
                 onPlayerInstanceRendered: this.OnRendered,
                 onGameExiting: this.OnGameExiting
             );
+            Console.WriteLine($"SGameRunner instance total time: {st.Elapsed.TotalMilliseconds}ms");
             GameRunner.instance = this.Game;
 
             // fix Harmony for mods
@@ -311,6 +324,7 @@ internal class SCore : IDisposable
         this.UpdateWindowTitles();
 
         // start game
+        Console.WriteLine($"total startup: {st.Elapsed.TotalMilliseconds}ms");
         this.Monitor.Log("Waiting for game to launch...", LogLevel.Debug);
         try
         {
