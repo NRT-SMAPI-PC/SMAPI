@@ -160,6 +160,8 @@ internal class SGame : Game1
         base.LoadContent();
 
         this.OnContentLoaded();
+
+        DebugOptimize.WaitTaskFarmerXmlSerializer();
     }
 
     /// <inheritdoc />
@@ -200,32 +202,6 @@ internal class SGame : Game1
     protected override void Initialize()
     {
         base.Initialize();
-        //log.Info("before SGame.Initialize()");
-        //keyboardDispatcher = new KeyboardDispatcher(base.Window);
-        //Game1.screenFade = new ScreenFade(this.onFadeToBlackComplete, Game1.onFadedBackInComplete);
-        //options = new Options();
-        //options.musicVolumeLevel = 1f;
-        //options.soundVolumeLevel = 1f;
-        //otherFarmers = new NetRootDictionary<long, Farmer>();
-
-        //log.Info("before task InitializeSerializers");
-        ////Task.Run(this.InitializeSerializers);
-        //this.DoThreadedInitTask(this.InitializeSerializers_Fix);
-        //log.Info("after task InitializeSerializers");
-        //viewport = new xTile.Dimensions.Rectangle(new Size(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
-        //currentSong = null;
-        //log.Info("before task InitializeSounds");
-        //this.DoThreadedInitTask(this.InitializeSounds);
-        //log.Info("after task InitializeSounds");
-        //int width = graphics.GraphicsDevice.Viewport.Width;
-        //int height = graphics.GraphicsDevice.Viewport.Height;
-        //this.screen = new RenderTarget2D(graphics.GraphicsDevice, width, height, mipMap: false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-        //Game1.allocateLightmap(width, height);
-        //previousViewportPosition = Vector2.Zero;
-        //PushUIMode();
-        //PopUIMode();
-        //setRichPresence("menus");
-        //Console.WriteLine("after SGame.Initialize()");
 
         // The game resets public static fields after the class is constructed (see GameRunner.SetInstanceDefaults), so SMAPI needs to re-override them here.
         Game1.input = this.InitialInput;
@@ -237,12 +213,6 @@ internal class SGame : Game1
         this.InitialInput = null;
         this.InitialMultiplayer = null;
     }
-
-    //private void InitializeSerializers_Fix()
-    //{
-    //    DebugOptimize.RunTaskFarmerXmlSerializer();
-    //    StartupPreferences.serializer = SaveSerializer.GetSerializer(typeof(StartupPreferences));
-    //}
 
     /// <summary>The method called when loading or creating a save.</summary>
     /// <param name="loadedGame">Whether this is being called from the game's load enumerator.</param>

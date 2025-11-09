@@ -241,7 +241,7 @@ internal class SCore : IDisposable
         // DebugOptimize feature
         try
         {
-            if (DebugOptimize.EnableDebugOptimize)
+            if (DebugOptimize.EnableOptimizeStartup)
             {
                 var hp = new Harmony(nameof(DebugOptimize));
                 hp.PatchAll();
@@ -1952,7 +1952,6 @@ internal class SCore : IDisposable
 
         // initialize loaded non-content-pack mods
         this.Monitor.Log("Launching mods...", LogLevel.Debug);
-        DebugOptimize.WaitTaskFarmerXmlSerializer();
         foreach (IModMetadata metadata in loadedMods)
         {
             IMod mod =

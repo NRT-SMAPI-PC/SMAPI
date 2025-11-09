@@ -19,14 +19,11 @@ namespace StardewModdingAPI;
 [HarmonyPatch]
 static class DebugOptimize
 {
-    /// <summary>
-    /// Indicates whether debug optimization features are enabled.
-    /// </summary>
-    public static bool EnableDebugOptimize => true;
+    public static bool EnableOptimizeStartup = false;
 
 
     static Stopwatch st3 = new();
-    public static bool m_skipLocalMultiplayerInitialize = true;
+    public static bool EnableSkipLocalMultiplayerInitialize = true;
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(LocalMultiplayer), "GetStaticFieldsAndDefaults")]
@@ -38,7 +35,7 @@ static class DebugOptimize
         ___staticFields = new List<FieldInfo>();
         ___staticDefaults = new List<object>();
 
-        if (m_skipLocalMultiplayerInitialize)
+        if (EnableSkipLocalMultiplayerInitialize)
         {
             Console.WriteLine("Skip LocalMultiplayer_GetStaticFieldsAndDefaults!!");
             return false;
@@ -54,7 +51,7 @@ static class DebugOptimize
     [HarmonyPatch(typeof(Game1), nameof(Game1.InitializeSerializers))]
     public static bool Prefix_Game1_InitializeSerializers()
     {
-        if (!EnableDebugOptimize)
+        if (!EnableOptimizeStartup)
             return false;
 
         var mon = monitor;
@@ -75,7 +72,7 @@ static class DebugOptimize
 
     internal static void WaitTaskFarmerXmlSerializer()
     {
-        if (!EnableDebugOptimize)
+        if (!EnableOptimizeStartup)
             return;
 
         var mon = monitor;

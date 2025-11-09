@@ -228,6 +228,10 @@ internal class Program
                 : Constants.DefaultModsPath;
         }
 
+        // debug optimize
+        if (args.Contains("--optimize-startup"))
+            DebugOptimize.EnableOptimizeStartup = true;
+
         // load SMAPI
         using SCore core = new(modsPath, writeToConsole, developerMode);
         core.RunInteractively();
